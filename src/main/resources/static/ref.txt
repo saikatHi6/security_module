@@ -1,0 +1,3 @@
+https://www.callicoder.com/spring-boot-spring-security-jwt-mysql-react-app-part-1/
+https://www.callicoder.com/spring-boot-spring-security-jwt-mysql-react-app-part-2/
+https://medium.com/@mool.smreeti/microservices-with-spring-boot-authentication-with-jwt-and-spring-security-6e10155d9db0
