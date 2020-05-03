@@ -1,7 +1,7 @@
 package org.atom.login.controller;
 
-import org.atom.login.model.AuthenticationRequest;
-import org.atom.login.model.AuthenticationResponse;
+import org.atom.login.model.payload.*;
+import org.atom.login.model.payload.AuthenticationResponse;
 import org.atom.login.service.CustomUserDetailsService;
 import org.atom.login.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;

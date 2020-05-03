@@ -2,20 +2,40 @@ package org.atom.login.service;
 
 import java.util.ArrayList;
 
-import org.springframework.security.core.userdetails.User;
+import org.atom.login.dao.UserRepository;
+import org.atom.login.model.User;
+import org.atom.login.model.UserPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService{
 
+	private UserRepository userRepository;
+
 	@Override
-	public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+	@Transactional
+	public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
 		// TODO Auto-generated method stub
-		return new User("foo", "foo",
-                new ArrayList<>());
+		User user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
+				.orElseThrow(() -> 
+				new UsernameNotFoundException("User not found with username or email : " + usernameOrEmail)
+						);
+
+		return UserPrincipal.create(user); 
 	}
+
+	@Transactional
+	public UserDetails loadUserById(Long id) {
+		User user = userRepository.findById(id).orElseThrow(
+				() -> new UsernameNotFoundException("User not found with id : " + id)
+				);
+
+		return UserPrincipal.create(user);
+	}
+
 
 }

@@ -1,17 +1,24 @@
-package org.atom.login.model;
+package org.atom.login.model.payload;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotBlank;
+
 public class AuthenticationRequest implements Serializable {
-	private String username;
+	
+	@NotBlank
+	private String usernameOrEmail;
+	
+	@NotBlank
 	private String password;
 
+	
 	public String getUsername() {
-		return username;
+		return usernameOrEmail;
 	}
 
 	public void setUsername(String username) {
-		this.username = username;
+		this.usernameOrEmail = username;
 	}
 
 	public String getPassword() {

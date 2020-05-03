@@ -11,9 +11,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
-public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint{
+public class JwtAuthenticationEntryPointException implements AuthenticationEntryPoint{
 
-	private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationEntryPoint.class);
+	private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationEntryPointException.class);
 	
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authEx)

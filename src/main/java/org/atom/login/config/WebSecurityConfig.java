@@ -1,6 +1,6 @@
 package org.atom.login.config;
 
-import org.atom.login.exception.JwtAuthenticationEntryPoint;
+import org.atom.login.exception.JwtAuthenticationEntryPointException;
 import org.atom.login.filters.JwtRequestFilter;
 import org.h2.server.web.WebServlet;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -27,7 +26,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 	private JwtRequestFilter jwtRequestFilter;
 
 	@Autowired
-	private JwtAuthenticationEntryPoint unAuthorized;
+	private JwtAuthenticationEntryPointException unAuthorized;
 	
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
