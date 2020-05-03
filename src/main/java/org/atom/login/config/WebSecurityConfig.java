@@ -1,7 +1,9 @@
 package org.atom.login.config;
 
 import org.atom.login.filters.JwtRequestFilter;
+import org.h2.server.web.WebServlet;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -40,11 +42,27 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.csrf().disable()
-		.authorizeRequests().antMatchers("/authenticate").permitAll().
+		.authorizeRequests().antMatchers("/","/h2/**","/authenticate").permitAll().
 		anyRequest().authenticated().and().
 		exceptionHandling().and().sessionManagement()
 		.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
+		httpSecurity.headers().frameOptions().disable();
+		
 	}
+	
+	
+	
+	@Bean
+    ServletRegistrationBean h2servletRegistration(){
+        ServletRegistrationBean registrationBean = new ServletRegistrationBean( new WebServlet());
+        registrationBean.addUrlMappings("/h2/*");
+        return registrationBean;
+    }
+	
+	
+	
+	
+	
 }
