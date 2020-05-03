@@ -27,7 +27,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 
 	@Autowired
 	private JwtAuthenticationEntryPointException unAuthorized;
-	
+
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(myUserDetailsService).passwordEncoder(passwordEncoder());
@@ -49,7 +49,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 		httpSecurity.
 		cors().disable().
 		csrf().disable().
-		authorizeRequests().antMatchers("/","/h2/**","/authenticate").permitAll().
+		authorizeRequests().
+		antMatchers("/h2/**").permitAll().
+		antMatchers("/api/auth/**").permitAll().
 		anyRequest().authenticated().and().
 		exceptionHandling().
 		authenticationEntryPoint(unAuthorized).
@@ -57,25 +59,25 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 		.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
-		
+
 		//Config for H2 DB only 
 		httpSecurity.headers().frameOptions().disable();
-		
+
 	}
-	
-	
+
+
 	/*
 	 * Config for H2 DB only
 	 * */
 	@Bean
-    ServletRegistrationBean h2servletRegistration(){
-        ServletRegistrationBean registrationBean = new ServletRegistrationBean( new WebServlet());
-        registrationBean.addUrlMappings("/h2/*");
-        return registrationBean;
-    }
-	
-	
-	
-	
-	
+	ServletRegistrationBean h2servletRegistration(){
+		ServletRegistrationBean registrationBean = new ServletRegistrationBean( new WebServlet());
+		registrationBean.addUrlMappings("/h2/*");
+		return registrationBean;
+	}
+
+
+
+
+
 }

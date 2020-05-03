@@ -7,7 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.atom.login.service.CustomUserDetailsService;
+import org.atom.login.service.AuthenticationService;
 import org.atom.login.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,7 +21,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtRequestFilter extends OncePerRequestFilter{
 
 	@Autowired
-	private CustomUserDetailsService userDetailsService;
+	private AuthenticationService userDetailsService;
 
 	@Autowired
 	private JwtUtil jwtUtil;
