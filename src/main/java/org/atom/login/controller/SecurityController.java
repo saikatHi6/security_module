@@ -7,6 +7,7 @@ import javax.validation.Valid;
 
 import org.atom.login.dao.RoleRepository;
 import org.atom.login.dao.UserRepository;
+import org.atom.login.exception.BadRequestException;
 import org.atom.login.exception.GenricException;
 import org.atom.login.model.Role;
 import org.atom.login.model.RoleName;
@@ -60,17 +61,18 @@ public class SecurityController {
 
 		try {
 			authenticationManager.authenticate(
-					new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
+					new UsernamePasswordAuthenticationToken(authenticationRequest.getUsernameOrEmail(), authenticationRequest.getPassword())
 					);
 		}
 		catch (BadCredentialsException e) {
+			e.printStackTrace();
 			return new ResponseEntity(new GenricResponse(false,"Incorrect username or password"),
 					HttpStatus.BAD_REQUEST);
 		}
 
 
 		final UserDetails userDetails = userDetailsService
-				.loadUserByUsername(authenticationRequest.getUsername());
+				.loadUserByUsername(authenticationRequest.getUsernameOrEmail());
 
 		final String jwt = jwtTokenUtil.generateToken(userDetails);
 
@@ -86,7 +88,7 @@ public class SecurityController {
 		try {
 			result = userDetailsService.createUser(signUpRequest);
 		}
-		catch (BadCredentialsException e) {
+		catch (BadRequestException e) {
 			return new ResponseEntity(new GenricResponse(false,e.getMessage()),
 					HttpStatus.BAD_REQUEST);
 		}

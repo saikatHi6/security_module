@@ -28,10 +28,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 	@Autowired
 	private JwtAuthenticationEntryPointException unAuthorized;
 
-	@Autowired
+	/*@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(myUserDetailsService).passwordEncoder(passwordEncoder());
-	}
+	}*/
+	
+	@Override
+    public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
+        authenticationManagerBuilder
+                .userDetailsService(myUserDetailsService)
+                .passwordEncoder(passwordEncoder());
+    }
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -50,6 +57,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 		cors().disable().
 		csrf().disable().
 		authorizeRequests().
+		antMatchers("/api/users").hasRole("ADMIN").
 		antMatchers("/h2/**").permitAll().
 		antMatchers("/api/auth/**").permitAll().
 		anyRequest().authenticated().and().

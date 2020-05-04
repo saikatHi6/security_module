@@ -5,6 +5,7 @@ import java.util.Collections;
 
 import org.atom.login.dao.RoleRepository;
 import org.atom.login.dao.UserRepository;
+import org.atom.login.exception.BadRequestException;
 import org.atom.login.exception.GenricException;
 import org.atom.login.model.Role;
 import org.atom.login.model.RoleName;
@@ -43,7 +44,7 @@ public class AuthenticationService implements UserDetailsService{
 		return UserPrincipal.create(user); 
 	}
 
-	@Transactional
+	//@Transactional
 	public UserDetails loadUserById(Long id) {
 		User user = userRepository.findById(id).orElseThrow(
 				() -> new UsernameNotFoundException("User not found with id : " + id)
@@ -52,32 +53,45 @@ public class AuthenticationService implements UserDetailsService{
 		return UserPrincipal.create(user);
 	}
 
-	@Transactional
-	private void isUserExistValidation(SignUpRequest signUpRequest) throws GenricException{
+	//@Transactional
+	private void isUserExistValidation(SignUpRequest signUpRequest) throws BadRequestException{
 		if(userRepository.existsByUsername(signUpRequest.getUsername())) {
-			throw new GenricException("Username is already taken!");
+			throw new BadRequestException("Username is already taken!");
 		}
 
 		if(userRepository.existsByEmail(signUpRequest.getEmail())) {
-			throw new GenricException("Email Address already in use!");
+			throw new BadRequestException("Email Address already in use!");
 		}
 	}
 
 	@Transactional
-	public User createUser(SignUpRequest signUpRequest)throws GenricException{
+	public User createUser(SignUpRequest signUpRequest)throws BadRequestException{
 		isUserExistValidation(signUpRequest);
 		User user = new User(signUpRequest.getName(), signUpRequest.getUsername(),
 				signUpRequest.getEmail(), signUpRequest.getPassword());
 
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-		Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
-				.orElseThrow(() -> new GenricException("User Role not set."));
+//signUpRequest.getRoleName()
+		Role userRole = roleRepository.findByName(findRoleByType(signUpRequest.getRoleType()))
+				.orElseThrow(() -> new BadRequestException("User Role not set."));
 
 		user.setRoles(Collections.singleton(userRole));
 		userRepository.save(user);
 		return user;
 	}
 
-
+	
+	private RoleName findRoleByType(String roleType){
+		
+		switch (roleType) {
+		case "ROLE_USER":
+			return RoleName.ROLE_USER;
+		case "ROLE_ADMIN":
+			return RoleName.ROLE_ADMIN;	
+		default:
+			throw new BadRequestException("User Role not set.");
+		}
+		
+	}
+	
 }

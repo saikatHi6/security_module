@@ -13,12 +13,14 @@ public class AuthenticationRequest implements Serializable {
 	private String password;
 
 	
-	public String getUsername() {
+	
+
+	public String getUsernameOrEmail() {
 		return usernameOrEmail;
 	}
 
-	public void setUsername(String username) {
-		this.usernameOrEmail = username;
+	public void setUsernameOrEmail(String usernameOrEmail) {
+		this.usernameOrEmail = usernameOrEmail;
 	}
 
 	public String getPassword() {
@@ -36,7 +38,7 @@ public class AuthenticationRequest implements Serializable {
 	}
 
 	public AuthenticationRequest(String username, String password) {
-		this.setUsername(username);
+		this.setUsernameOrEmail(username);
 		this.setPassword(password);
 	}
 }
