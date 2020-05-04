@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.atom.login.annotation.CurrentUser;
 import org.atom.login.dao.UserRepository;
+import org.atom.login.exception.GenricException;
 import org.atom.login.exception.ResourceNotFoundException;
 import org.atom.login.model.User;
 import org.atom.login.model.UserPrincipal;
@@ -36,18 +37,21 @@ public class UserController {
 	@PreAuthorize("hasRole('USER')")
 	public UserSummary getCurrentUser(@CurrentUser UserPrincipal currentUser) {
 		UserSummary userSummary = new UserSummary(currentUser.getId(), currentUser.getUsername(), currentUser.getName(),currentUser.getEmail());
+		logger.trace(userSummary.toString());
 		return userSummary;
 	}
 
 	@GetMapping("/user/checkUsernameAvailability")
 	public UserIdentityAvailability checkUsernameAvailability(@RequestParam(value = "username") String username) {
 		Boolean isAvailable = !userRepository.existsByUsername(username);
+		logger.trace(username);
 		return new UserIdentityAvailability(isAvailable);
 	}
 
 	@GetMapping("/user/checkEmailAvailability")
 	public UserIdentityAvailability checkEmailAvailability(@RequestParam(value = "email") String email) {
 		Boolean isAvailable = !userRepository.existsByEmail(email);
+		logger.trace(email);
 		return new UserIdentityAvailability(isAvailable);
 	}
 
@@ -55,8 +59,8 @@ public class UserController {
 	public UserProfile getUserProfile(@PathVariable(value = "username") String username) {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
-
-
+		
+		logger.trace(user.toString());
 		UserProfile userProfile = new UserProfile(user.getId(), user.getUsername(), user.getName(), user.getCreatedAt());
 
 		return userProfile;
@@ -64,8 +68,17 @@ public class UserController {
 
 	@GetMapping("/users")
 	public ResponseEntity<?> getAllListOfUsers() {
-		List<User> users = userRepository.findAll();
-
+		List<User> users = null;
+		
+		try{
+			users = userRepository.findAll();
+			logger.trace("Total number of users: "+users.size());
+		}
+		catch (GenricException e) {
+			logger.error(e.getMessage());
+			return new ResponseEntity<>(new GenricException(e.getMessage()),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
 		return new ResponseEntity<>(users, HttpStatus.OK);
 	}
 

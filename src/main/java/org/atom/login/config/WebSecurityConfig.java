@@ -3,6 +3,8 @@ package org.atom.login.config;
 import org.atom.login.exception.JwtAuthenticationEntryPointException;
 import org.atom.login.filters.JwtRequestFilter;
 import org.h2.server.web.WebServlet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +29,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 
 	@Autowired
 	private JwtAuthenticationEntryPointException unAuthorized;
+	
+	private static final Logger logger = LoggerFactory.getLogger(WebSecurityConfig.class);
 
 	/*@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -35,9 +39,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 	
 	@Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        authenticationManagerBuilder
-                .userDetailsService(myUserDetailsService)
-                .passwordEncoder(passwordEncoder());
+		
+        try {
+        	logger.trace(myUserDetailsService.toString());
+			authenticationManagerBuilder
+			        .userDetailsService(myUserDetailsService)
+			        .passwordEncoder(passwordEncoder());
+		} catch (Exception e) {
+			logger.error("Faield due to", e.getCause());
+		}
+        logger.info("Successfully configure authantication manager builder");
     }
 
 	@Bean
@@ -57,7 +68,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 		cors().disable().
 		csrf().disable().
 		authorizeRequests().
-		antMatchers("/api/users").hasRole("ADMIN").
+		antMatchers("/api/users/**").hasRole("ADMIN").
 		antMatchers("/h2/**").permitAll().
 		antMatchers("/api/auth/**").permitAll().
 		anyRequest().authenticated().and().
@@ -70,7 +81,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 
 		//Config for H2 DB only 
 		httpSecurity.headers().frameOptions().disable();
-
+		logger.info("Successfully configure http security");
 	}
 
 

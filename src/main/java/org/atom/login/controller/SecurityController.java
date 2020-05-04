@@ -15,6 +15,8 @@ import org.atom.login.model.User;
 import org.atom.login.model.payload.*;
 import org.atom.login.service.AuthenticationService;
 import org.atom.login.util.JwtUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +37,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RequestMapping("/api/auth")
 public class SecurityController {
 
+	private static final Logger logger = LoggerFactory.getLogger(SecurityController.class);
+	
 	@Autowired
 	private AuthenticationManager authenticationManager;
 
@@ -45,7 +49,7 @@ public class SecurityController {
 	private AuthenticationService userDetailsService;
 
 
-	@GetMapping({ "/" })
+	/*@GetMapping({ "/" })
 	public String initialPage() {
 		return "Initial Load";
 	}
@@ -54,18 +58,19 @@ public class SecurityController {
 	@GetMapping({ "/hello" })
 	public String firstPage() {
 		return "Hello World";
-	}
+	}*/
 
 	@PostMapping(value = "/authenticate")
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
 
 		try {
+			logger.trace("User Name or Email : "+authenticationRequest.getUsernameOrEmail()+" Password : "+authenticationRequest.getPassword());
 			authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(authenticationRequest.getUsernameOrEmail(), authenticationRequest.getPassword())
 					);
 		}
 		catch (BadCredentialsException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage());
 			return new ResponseEntity(new GenricResponse(false,"Incorrect username or password"),
 					HttpStatus.BAD_REQUEST);
 		}
@@ -75,7 +80,7 @@ public class SecurityController {
 				.loadUserByUsername(authenticationRequest.getUsernameOrEmail());
 
 		final String jwt = jwtTokenUtil.generateToken(userDetails);
-
+		
 		return ResponseEntity.ok(new AuthenticationResponse(jwt));
 	}
 
@@ -86,9 +91,11 @@ public class SecurityController {
 		User result = null;
 
 		try {
+			logger.trace(signUpRequest.toString());
 			result = userDetailsService.createUser(signUpRequest);
 		}
 		catch (BadRequestException e) {
+			logger.error(e.getMessage());
 			return new ResponseEntity(new GenricResponse(false,e.getMessage()),
 					HttpStatus.BAD_REQUEST);
 		}

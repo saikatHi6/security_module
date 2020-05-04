@@ -12,6 +12,8 @@ import org.atom.login.model.RoleName;
 import org.atom.login.model.User;
 import org.atom.login.model.UserPrincipal;
 import org.atom.login.model.payload.SignUpRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -32,6 +34,9 @@ public class AuthenticationService implements UserDetailsService{
 	@Autowired
 	PasswordEncoder passwordEncoder;
 
+	private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
+
+	
 	@Override
 	@Transactional
 	public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
@@ -44,7 +49,7 @@ public class AuthenticationService implements UserDetailsService{
 		return UserPrincipal.create(user); 
 	}
 
-	//@Transactional
+	@Transactional
 	public UserDetails loadUserById(Long id) {
 		User user = userRepository.findById(id).orElseThrow(
 				() -> new UsernameNotFoundException("User not found with id : " + id)
@@ -53,7 +58,7 @@ public class AuthenticationService implements UserDetailsService{
 		return UserPrincipal.create(user);
 	}
 
-	//@Transactional
+	@Transactional
 	private void isUserExistValidation(SignUpRequest signUpRequest) throws BadRequestException{
 		if(userRepository.existsByUsername(signUpRequest.getUsername())) {
 			throw new BadRequestException("Username is already taken!");
