@@ -12,6 +12,7 @@ import org.springframework.security.config.BeanIds;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -71,6 +72,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 		antMatchers("/api/users/**").hasRole("ADMIN").
 		antMatchers("/h2/**").permitAll().
 		antMatchers("/api/auth/**").permitAll().
+		antMatchers("/v2/api-docs",
+                "/configuration/ui",
+                "/swagger-resources/**",
+                "/configuration/security",
+                "/swagger-ui.html",
+                "/webjars/**").permitAll().
 		anyRequest().authenticated().and().
 		exceptionHandling().
 		authenticationEntryPoint(unAuthorized).
@@ -84,6 +91,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 		logger.info("Successfully configure http security");
 	}
 
+	/*@Override
+    public void configure(WebSecurity web) throws Exception {
+		
+        web.authorizeRequests().antMatchers("/v2/api-docs",
+                                   "/configuration/ui",
+                                   "/swagger-resources/**",
+                                   "/configuration/security",
+                                   "/swagger-ui.html",
+                                   "/webjars/**");
+    }*/
 
 	/*
 	 * Config for H2 DB only
