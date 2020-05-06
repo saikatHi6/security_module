@@ -33,6 +33,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+
 @RestController
 @RequestMapping("/api/auth")
 public class SecurityController {
@@ -61,6 +64,7 @@ public class SecurityController {
 	}*/
 
 	@PostMapping(value = "/authenticate")
+	@ApiImplicitParams(@ApiImplicitParam(name = "Authorization"))
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
 
 		try {
@@ -85,6 +89,7 @@ public class SecurityController {
 	}
 
 	@PostMapping("/signup")
+	@ApiImplicitParams({})
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
 
 		// Creating user's account
